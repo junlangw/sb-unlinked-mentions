@@ -21,6 +21,7 @@ Each result includes:
 - 🔗 **One-click linking** — convert plain text mentions to `[[wikilinks]]`
 - 🛡️ **Safe replacement** — skips frontmatter, code blocks, inline code, existing links, and URLs
 - 🏷️ **Alias support** — reads `aliases` from frontmatter, preserves original text with `[[page|alias]]` syntax
+- 📄 **File name matching** — `People/Alice` also finds a plain "Alice" when no other file has that name (SilverBullet 2.11+)
 - 🚫 **Tag exclusion** — `#hashtag` mentions are never treated as unlinked mentions or converted
 - 📂 **Folder exclusion** — ignores Library/, System/, template/ by default
 - 📁 **Collapsible** — click the heading to expand/collapse (arrow hidden for visual consistency with Linked Mentions)
@@ -62,6 +63,7 @@ config.set("unlinkedMentions", {
   minTermLength = 2,       -- Minimum search term length (single characters are ignored to avoid noise)
   defaultOpen = true,      -- Widget expanded by default (set false to start collapsed)
   contextLen = 100,        -- Context characters shown around each mention in the snippet
+  matchFilename = true,    -- Also search for the bare file name when it is unique in the space (SilverBullet 2.11+)
   excludeFolders = {       -- Folders to EXCLUDE — you can add any of your own folders here
     "Library/",           --   e.g. "Private/", "Work/Archive/", "Notes/Inbox/"
     "System/",
@@ -85,11 +87,13 @@ config.set("unlinkedMentions.maxResults", 50)
 config.set("unlinkedMentions.defaultOpen", false)
 -- Disable the widget
 config.set("unlinkedMentions.enabled", false)
+-- Only search for full page names and aliases
+config.set("unlinkedMentions.matchFilename", false)
 ```
 
 ## How it works
 
-1. Collects search terms: current page name + any `aliases` from frontmatter
+1. Collects search terms: current page name + its file name if unique in the space + any `aliases` from frontmatter
 2. Searches using Silversearch for each term
 3. Filters out: the current page, already-linked pages, excluded folders
 4. Performs **exact substring verification** on each result's excerpt or full text to eliminate fuzzy-match false positives

@@ -13,6 +13,7 @@
 - 🚫 **标签排除**：`#标签` 中的提及不会被识别为未链接提及，也不会被转换
 - 🛡️ **安全替换**：自动跳过 frontmatter、代码块、行内代码、已有 `[[双链]]`、Markdown 链接 URL
 - 🏷️ **别名支持**：读取 frontmatter 的 `aliases`，命中别名时转成 `[[真实页面名|别名原文]]` 保留原文字
+- 📄 **文件名匹配**：`People/Alice` 也能搜到纯文本 “Alice”，前提是没有其他文件同名（需 SilverBullet 2.11+）
 - 📂 **可折叠**：点击标题展开/收起（隐藏箭头，与 Linked Mentions 视觉一致）
 - 🌏 **中文搜索**：配合 [中文分词器](https://github.com/LelouchHe/silversearch-chinese-tokenizer) 效果最佳
 - 🪶 **零构建**：纯 Space Lua，一个 `.md` 文件即可，无需编译
@@ -52,6 +53,7 @@ config.set("unlinkedMentions", {
   minTermLength = 2,       -- 最短搜索词长度（单字不搜，避免噪声）
   defaultOpen = true,      -- 默认展开（false 则默认折叠）
   contextLen = 100,        -- 每条提及前后显示的上下文字符数
+  matchFilename = true,    -- 文件名全库唯一时也作为搜索词（需 SilverBullet 2.11+）
   excludeFolders = {       -- 排除的目录 —— 可以把自己的目录加进来
     "Library/",            --   例如 "私密笔记/", "工作/归档/", "Notes/Inbox/"
     "System/",
@@ -75,11 +77,13 @@ config.set("unlinkedMentions.maxResults", 50)
 config.set("unlinkedMentions.defaultOpen", false)
 -- 禁用插件
 config.set("unlinkedMentions.enabled", false)
+-- 只搜完整页名和别名
+config.set("unlinkedMentions.matchFilename", false)
 ```
 
 ## 工作原理
 
-1. 收集搜索词：当前页面名 + frontmatter 中的 `aliases`
+1. 收集搜索词：当前页面名 + 全库唯一的文件名 + frontmatter 中的 `aliases`
 2. 用 Silversearch 逐个搜索
 3. 过滤掉：当前页自身、已有双链的页面、被排除的目录
 4. 对每个结果做**精确子串验证**（检查摘要或全文是否真的包含搜索词），消除模糊匹配误报

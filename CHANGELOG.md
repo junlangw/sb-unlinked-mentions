@@ -6,7 +6,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and
 
 ## [Unreleased]
 
-- Nothing yet.
+### 2026-10-12
+- `matchFilename` option (default `true`): a page inside a folder is also found by its bare file name — `People/Alice` matches a plain "Alice" — as long as no other file in the space shares that name.
+- Mirrors SilverBullet 2.11's name-based link resolution, which resolves `[[Alice]]` to `People/Alice` under the same condition.
+- No effect on older SilverBullet versions.
 
 ## [0.6.1] - 2026-08-18
 
