@@ -18,6 +18,7 @@
 - 🪶 **零构建**：纯 Space Lua，一个 `.md` 文件即可，无需编译
 - 🔤 **纯文本摘要**：上下文片段经官方 markdown 解析器转纯文本，原文中的 `# 标题`、`**加粗**`、`[[链接]]` 不会泄漏到预览里
 - 🧩 **可停靠视图**：以 SilverBullet 2.12 的原生视图 `kiefeng.unlinkedMentions` 注册，停靠在页面底部（minimal 框），可从 dock 菜单移到可调大小的底部面板
+- 🎨 **不依赖主题**：不写死任何色值，全部映射到 SilverBullet 官方 token（`--editor-link-color`、`--subtle-color`、`--button-*` 等），并以 `currentColor 兜底。官方亮色/暗色主题自动跟随，自定义主题只要定义了同名 token 也能接住
 
 ## 环境要求
 

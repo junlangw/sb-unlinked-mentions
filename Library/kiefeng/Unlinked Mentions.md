@@ -8,6 +8,13 @@ share.mode: pull
 # Unlinked Mentions Widget
 
 ```space-style
+/* 主题适配策略：不写死任何色值，只用 SilverBullet 官方 token，
+   每处都带 currentColor 兜底——即使某个主题一个变量都没定义，
+   也会继承正文颜色，不会跳出一套突兀的配色。
+   亮暗两态由官方 theme.scss 的 html{} / html[data-theme="dark"] 自动翻转，
+   第三方主题只要定义了对应 token 也会被接住。
+   改配色请改这里，不要改Lua。 */
+
 /* 折叠容器 */
 .sb-unlinked {
   margin-top: 0.5rem;
@@ -49,8 +56,9 @@ share.mode: pull
   gap: 8px;
   line-height: 1.6;
 }
+/* --editor-link-color 内部即 --link-color，是官方在编辑器正文里给链接用的变量 */
 .sb-unlinked-link {
-  color: var(--ui-link-color, var(--ui-accent-color, #58a6ff));
+  color: var(--editor-link-color, currentColor);
   font-weight: bold;
   text-decoration: none;
   cursor: pointer;
@@ -59,7 +67,7 @@ share.mode: pull
   text-decoration: underline;
 }
 .sb-unlinked-term {
-  opacity: 0.55;
+  color: var(--meta-subtle-color, currentColor);
   font-size: 0.9em;
 }
 .sb-unlinked-one {
@@ -68,8 +76,8 @@ share.mode: pull
   cursor: pointer;
   background: none;
   border: none;
-  color: var(--ui-accent-color, #888);
-  opacity: 0.5;
+  color: var(--action-button-color, currentColor);
+  opacity: 0.6;
 }
 .sb-unlinked-one:hover {
   opacity: 1;
@@ -78,7 +86,7 @@ share.mode: pull
 .sb-unlinked-excerpt {
   font-size: 0.9em;
   line-height: 1.5;
-  opacity: 0.7;
+  color: var(--subtle-color, currentColor);
   padding-left: 4px;
   margin-top: 3px;
 }
@@ -89,18 +97,17 @@ share.mode: pull
   font-size: 0.88em;
   padding: 2px 10px;
   cursor: pointer;
-  background: none;
-  border: 1px solid var(--ui-accent-color, #888);
+  background: var(--button-background-color, transparent);
+  color: var(--button-color, currentColor);
+  border: 1px solid var(--button-border-color, currentColor);
   border-radius: 3px;
-  color: var(--ui-accent-color, #888);
-  opacity: 0.6;
 }
 .sb-unlinked-btn:hover {
-  opacity: 1;
+  background: var(--button-hover-background-color, transparent);
 }
 .sb-unlinked-more {
   font-size: 0.85em;
-  opacity: 0.5;
+  color: var(--meta-subtle-color, currentColor);
   padding: 2px 0;
 }
 ```

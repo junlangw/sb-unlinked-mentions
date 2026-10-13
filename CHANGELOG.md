@@ -8,6 +8,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and
 
 - Nothing yet.
 
+## [0.7.1] - 2026-10-13
+
+### Fixed
+- **Theme compatibility.** The stylesheet referenced `--ui-link-color`, a variable SilverBullet never defines, so page-name links silently fell back to `--ui-accent-color` — meaning they rendered in the theme's *accent* colour rather than its *link* colour. It now uses `--editor-link-color` (which resolves to `--link-color`), the variable SilverBullet actually uses for links inside editor content. On the official dark theme this changes the link from brick-red-ish accent blue to the proper link blue; on custom themes it finally picks up the designed link colour.
+- **Link All button now uses the theme's own button tokens** (`--button-background-color`, `--button-color`, `--button-border-color`, `--button-hover-background-color`) instead of a hand-rolled accent-coloured border, so it looks like a native SilverBullet button in any theme.
+
+### Changed
+- **The stylesheet no longer hardcodes a single colour value.** Every `var()` ends in `currentColor` (or `transparent`), so even a theme that defines none of SilverBullet's tokens renders the widget in the surrounding text colour rather than an off-palette blue.
+- Dimmed text now uses the official subtle tokens (`--subtle-color`, `--meta-subtle-color`) instead of stacking `opacity` on a fixed colour; the single-item `Link` button uses `--action-button-color`. `opacity` is kept only for the two hover affordances, where it is genuinely theme-independent.
+- The theme strategy is documented in a comment at the top of the `space-style` block: colour changes belong there, not in the Lua.
+
+### Verified against
+- `client/styles/theme.scss` at SilverBullet 2.12.1 — the official `html {}` (light) and `html[data-theme="dark"]` (dark) variable sets. All eight tokens used are real, and each has a value in both.
+
 ## [0.7.0] - 2026-10-13
 
 ### Changed

@@ -28,6 +28,7 @@ Each result includes:
 - 🪶 **Zero build** — pure Space Lua, no compilation needed
 - 🔤 **Pure-text snippets** — context excerpts are rendered as plain text via the official markdown parser, so `# headings`, `**bold**`, `[[links]]` in the source never leak into the preview
 - 🧩 **Dockable view** — registered as a real SilverBullet 2.12 view (`kiefeng.unlinkedMentions`), docked at the page bottom with a minimal frame; you can move it to a resizable bottom panel from the dock menu
+- 🎨 **Theme-independent** — no hardcoded colours; every style maps to an official SilverBullet token (`--editor-link-color`, `--subtle-color`, `--button-*`, …) with a `currentColor` fallback, so it follows the official light and dark themes and any custom theme that defines those tokens
 
 ## Requirements
 
@@ -53,6 +54,8 @@ The widget automatically appears at the bottom of pages that have unlinked menti
 If you use the [Configuration Manager](https://silverbullet.md/Library%20Manager), add this repository as a library source and install from there. The file will be placed automatically under `Library/kiefeng/`.
 
 ## Configuration
+
+> 🎨 **Theming:** colours live entirely in the `space-style` block at the top of this file and are expressed as SilverBullet tokens, so the widget follows whatever theme you run. To match a custom palette, either define the standard tokens in your theme, or override the `.sb-unlinked-*` rules in your own `space-style`. You do not need to touch the Lua.
 
 You can customize the widget in your `CONFIG` page. **All of the options below are user-configurable — you can change them in your own space without touching the plug code.**
 
