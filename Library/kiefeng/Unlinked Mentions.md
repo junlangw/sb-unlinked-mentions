@@ -186,18 +186,46 @@ local function isSafePosition(line, startPos)
   return true
 end
 
+-- 判定单行能否安全扫描/替换，并就地更新跨行状态。
+-- 依次处理 YAML frontmatter、围栏代码块、HTML 注释。
+-- HTML 注释自2.11 起会被 SilverBullet 当markdown 解析并渲染
+-- （含 <!--#lua--> 烘焙区块），因此注释内容一律不碰。
+local function updateLineState(st, line)
+  if not st.frontmatterDone and string.match(line, "^---%s*$") then
+    st.inFrontmatter = not st.inFrontmatter
+    if not st.inFrontmatter then st.frontmatterDone = true end
+    return false
+  end
+  if st.inFrontmatter then return false end
+  if string.match(line, "^```") then
+    st.inCodeBlock = not st.inCodeBlock
+    return false
+  end
+  if st.inCodeBlock then return false end
+
+  local opens = string.find(line, "<!--", 1, true)
+  local closes = string.find(line, "-->", 1, true)
+  if st.inHtmlComment or opens then
+    -- 同一行内注释前后的文字也一并放过（保守，宁可漏也不错改）
+    if opens and closes and closes > opens then
+      st.inHtmlComment = false
+    else
+      st.inHtmlComment = true
+    end
+    return false
+  end
+  return true
+end
+
+local function newLineState()
+  return { inFrontmatter = false, frontmatterDone = false, inCodeBlock = false, inHtmlComment = false }
+end
+
 local function findFirstSafeMention(content, term)
   local termLower = string.lower(term)
-  local inFrontmatter = false
-  local frontmatterDone = false
-  local inCodeBlock = false
+  local st = newLineState()
   for line in string.gmatch(content, "([^\r\n]*)\r?\n?") do
-    if not frontmatterDone and string.match(line, "^---%s*$") then
-      inFrontmatter = not inFrontmatter
-      if not inFrontmatter then frontmatterDone = true end
-    elseif not inFrontmatter and string.match(line, "^```") then
-      inCodeBlock = not inCodeBlock
-    elseif not inFrontmatter and not inCodeBlock then
+    if updateLineState(st, line) then
       local lineLower = string.lower(line)
       local searchPos = 1
       while true do
@@ -261,49 +289,34 @@ end
 
 local function replaceFirstMention(content, term, targetPage)
   local lines = {}
-  local inFrontmatter = false
-  local frontmatterDone = false
-  local inCodeBlock = false
+  local st = newLineState()
   local replaced = false
   for line in string.gmatch(content, "([^\r\n]*)\r?\n?") do
-    if not replaced then
-      if not frontmatterDone and string.match(line, "^---%s*$") then
-        if not inFrontmatter then inFrontmatter = true
-        else inFrontmatter = false; frontmatterDone = true end
-        table.insert(lines, line)
-      elseif inFrontmatter then
-        table.insert(lines, line)
-      elseif string.match(line, "^```") then
-        inCodeBlock = not inCodeBlock
-        table.insert(lines, line)
-      elseif inCodeBlock then
-        table.insert(lines, line)
-      else
-        local termLower = string.lower(term)
-        local lineLower = string.lower(line)
-        local searchPos = 1
-        local newLine = line
-        while true do
-          local s, e = string.find(lineLower, termLower, searchPos, true)
-          if not s then break end
-          if isSafePosition(newLine, s) then
-            local actualText = string.sub(newLine, s, e)
-            local replacement
-            if actualText == targetPage then
-              replacement = "[[" .. targetPage .. "]]"
-            else
-              replacement = "[[" .. targetPage .. "|" .. actualText .. "]]"
-            end
-            newLine = string.sub(newLine, 1, s - 1) .. replacement .. string.sub(newLine, e + 1)
-            replaced = true
-            break
-          end
-          searchPos = e + 1
-        end
-        table.insert(lines, newLine)
-      end
-    else
+    if replaced or not updateLineState(st, line) then
       table.insert(lines, line)
+    else
+      local termLower = string.lower(term)
+      local lineLower = string.lower(line)
+      local searchPos = 1
+      local newLine = line
+      while true do
+        local s, e = string.find(lineLower, termLower, searchPos, true)
+        if not s then break end
+        if isSafePosition(newLine, s) then
+          local actualText = string.sub(newLine, s, e)
+          local replacement
+          if actualText == targetPage then
+            replacement = "[[" .. targetPage .. "]]"
+          else
+            replacement = "[[" .. targetPage .. "|" .. actualText .. "]]"
+          end
+          newLine = string.sub(newLine, 1, s - 1) .. replacement .. string.sub(newLine, e + 1)
+          replaced = true
+          break
+        end
+        searchPos = e + 1
+      end
+      table.insert(lines, newLine)
     end
   end
   return table.concat(lines, "\n"), replaced
@@ -640,14 +653,23 @@ pcall(function()
   }
 end)
 
-event.listen {
-  name = "hooks:renderBottomWidgets",
-  run = function()
-    local enabled = config.get("unlinkedMentions.enabled")
-    if enabled ~= false then
+-- 注册为页面底部的可停靠视图（2.12+ API，取代已废弃的 hooks:renderBottomWidgets）。
+-- frame = "minimal" 隐藏标题栏/折叠/关闭按钮，与插件自己的标题融为一体；
+-- 内容为空时（该页无未链接提及）视图自动隐藏。
+view.define {
+  name = "kiefeng.unlinkedMentions",
+  title = "Unlinked Mentions",
+  dock = "page-bottom",
+  supportedDocks = { "page-bottom", "bhs" },
+  frame = "minimal",
+  widget = widget.new {
+    refreshOn = { "navigate", "edit", "index" },
+    content = function()
+      local enabled = config.get("unlinkedMentions.enabled")
+      if enabled == false then return nil end
       return widgets.unlinkedMentions()
-    end
-  end
+    end,
+  },
 }
 ```
 

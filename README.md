@@ -19,7 +19,7 @@ Each result includes:
 
 - 🔍 **Full-text search** powered by [Silversearch](https://github.com/MrMugame/silversearch)
 - 🔗 **One-click linking** — convert plain text mentions to `[[wikilinks]]`
-- 🛡️ **Safe replacement** — skips frontmatter, code blocks, inline code, existing links, and URLs
+- 🛡️ **Safe replacement** — skips frontmatter, code blocks, HTML comments, inline code, existing links, and URLs
 - 🏷️ **Alias support** — reads `aliases` from frontmatter, preserves original text with `[[page|alias]]` syntax
 - 🚫 **Tag exclusion** — `#hashtag` mentions are never treated as unlinked mentions or converted
 - 📂 **Folder exclusion** — ignores Library/, System/, template/ by default
@@ -27,10 +27,11 @@ Each result includes:
 - 🌏 **Chinese search** — works best with the [silversearch-chinese-tokenizer](https://github.com/LelouchHe/silversearch-chinese-tokenizer)
 - 🪶 **Zero build** — pure Space Lua, no compilation needed
 - 🔤 **Pure-text snippets** — context excerpts are rendered as plain text via the official markdown parser, so `# headings`, `**bold**`, `[[links]]` in the source never leak into the preview
+- 🧩 **Dockable view** — registered as a real SilverBullet 2.12 view (`kiefeng.unlinkedMentions`), docked at the page bottom with a minimal frame; you can move it to a resizable bottom panel from the dock menu
 
 ## Requirements
 
-- [SilverBullet](https://silverbullet.md) v2.x
+- [SilverBullet](https://silverbullet.md) **v2.12 or later** (0.7.0 uses the 2.12 `view.define` API; earlier versions use the deprecated `hooks:renderBottomWidgets`)
 - [Silversearch](https://github.com/MrMugame/silversearch) (full-text search library) — install via the Configuration Manager first
 
 For Chinese-language spaces, also install:

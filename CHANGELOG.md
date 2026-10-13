@@ -8,6 +8,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and
 
 - Nothing yet.
 
+## [0.7.0] - 2026-10-13
+
+### Changed
+- **Migrated to the SilverBullet 2.12 view/widget API.** The plug no longer listens to `hooks:renderBottomWidgets`, which 2.12.0 deprecated; it now registers a real dockable view (`kiefeng.unlinkedMentions`) via `view.define`.
+  - Docked to `page-bottom` with `frame = "minimal"`, so it renders as plain page content with hover-only buttons — visually identical to the previous bottom widget, but with a Go to definition / Copy / dock-menu affordance.
+  - `supportedDocks` also allows `bhs` (resizable bottom panel) if you prefer a real panel.
+  - The live widget refreshes on `navigate`, `edit` and `index` triggers, so linking a mention now refreshes the list immediately without a manual reload.
+  - A page dock hides itself when there is nothing to show, matching the old behaviour of returning `nil`.
+- The inner widget still uses the static `widget.new { html = … }` form, which the 2.12 API documents as valid for content widgets; only the *registration* mechanism changed.
+
+### Fixed
+- **HTML comments are now left alone.** SilverBullet 2.11.0 started parsing `<!-- … -->` bodies as markdown (and baked sections use `<!--#lua … -->`), so pure-text mentions inside a comment would have been rewritten into visible wikilinks. Comment regions are now tracked across lines and skipped entirely by both the mention search and the replacement. Lines that open and close a comment on the same line are skipped wholesale, even if there is ordinary text outside the comment — deliberately conservative.
+- A fenced code fence appearing inside YAML frontmatter no longer toggles code-block state (the search and the replacement now share one line classifier, which fixed a small inconsistency between them).
+
+### Requirements
+- SilverBullet **v2.12 or later**. The old `hooks:renderBottomWidgets` path is gone; on 2.12+ this version is required.
+
 ## [0.6.1] - 2026-08-18
 
 ### Fixed

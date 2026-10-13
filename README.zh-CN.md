@@ -11,16 +11,17 @@
 - 🔗 **单条转正**：每条结果右侧的 `Link` 按钮，将该页第一处安全提及转为 `[[双链]]`
 - ⚡ **一键全转**：底部 `Link All` 按钮批量转换所有可见结果
 - 🚫 **标签排除**：`#标签` 中的提及不会被识别为未链接提及，也不会被转换
-- 🛡️ **安全替换**：自动跳过 frontmatter、代码块、行内代码、已有 `[[双链]]`、Markdown 链接 URL
+- 🛡️ **安全替换**：自动跳过 frontmatter、代码块、HTML 注释、行内代码、已有 `[[双链]]`、Markdown 链接 URL
 - 🏷️ **别名支持**：读取 frontmatter 的 `aliases`，命中别名时转成 `[[真实页面名|别名原文]]` 保留原文字
 - 📂 **可折叠**：点击标题展开/收起（隐藏箭头，与 Linked Mentions 视觉一致）
 - 🌏 **中文搜索**：配合 [中文分词器](https://github.com/LelouchHe/silversearch-chinese-tokenizer) 效果最佳
 - 🪶 **零构建**：纯 Space Lua，一个 `.md` 文件即可，无需编译
 - 🔤 **纯文本摘要**：上下文片段经官方 markdown 解析器转纯文本，原文中的 `# 标题`、`**加粗**`、`[[链接]]` 不会泄漏到预览里
+- 🧩 **可停靠视图**：以 SilverBullet 2.12 的原生视图 `kiefeng.unlinkedMentions` 注册，停靠在页面底部（minimal 框），可从 dock 菜单移到可调大小的底部面板
 
 ## 环境要求
 
-- SilverBullet v2.x
+- SilverBullet **v2.12 或更高**（0.7.0 使用 2.12 的 `view.define` API；旧版本使用已废弃的 `hooks:renderBottomWidgets`）
 - [Silversearch](https://github.com/MrMugame/silversearch)（全文搜索库，先通过 Configuration Manager 安装）
 
 中文笔记空间建议额外安装：
