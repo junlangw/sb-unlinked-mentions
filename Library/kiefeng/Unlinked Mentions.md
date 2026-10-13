@@ -125,6 +125,7 @@ config.define("unlinkedMentions", {
     minTermLength = schema.number(),
     defaultOpen = schema.boolean(),
     contextLen = schema.number(),
+    matchFilename = schema.boolean(),
     excludeFolders = schema.array("string"),
   }
 })
@@ -135,6 +136,7 @@ config.set("unlinkedMentions", {
   minTermLength = 2,
   defaultOpen = true,
   contextLen = 100,
+  matchFilename = true,
   excludeFolders = {"Library/", "System/", "template/", "Template/"}
 })
 
@@ -378,6 +380,16 @@ local function searchUnlinked(pageName, options, pageText)
   -- 全库命令时传 space.readPage(pageName) 的文本（保证 aliases 属于被遍历的页面）
   if not pageText then
     pageText = editor.getText()
+  end
+  -- 文件名全库唯一时也作为搜索词（需 SilverBullet 2.11+）
+  if options.matchFilename ~= false then
+    local fileName = string.match(pageName, "([^/]+)$")
+    if fileName and fileName ~= pageName then
+      local ok, colliding = pcall(space.collidingBasenames)
+      if ok and colliding and not colliding[string.lower(fileName) .. ".md"] then
+        table.insert(terms, fileName)
+      end
+    end
   end
   for _, alias in ipairs(getAliases(pageText)) do table.insert(terms, alias) end
 
@@ -688,6 +700,7 @@ config.set("unlinkedMentions", {
   maxResults = 30,
   minTermLength = 2,
   defaultOpen = true,
+  matchFilename = true,
   excludeFolders = {"Library/", "System/", "template/", "Template/"}
 })
 ```
