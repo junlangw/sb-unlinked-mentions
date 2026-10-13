@@ -24,11 +24,11 @@ Each result includes:
 - 📄 **File name matching** — `People/Alice` also finds a plain "Alice" when no other file has that name (SilverBullet 2.11+)
 - 🚫 **Tag exclusion** — `#hashtag` mentions are never treated as unlinked mentions or converted
 - 📂 **Folder exclusion** — ignores Library/, System/, template/ by default
-- 📁 **Collapsible** — click the heading to expand/collapse (arrow hidden for visual consistency with Linked Mentions)
+- 🗂️ **Native panel header** — the view uses SilverBullet's own frame, so it looks like the built-in Linked Mentions: title bar, fold, close and a dock menu
 - 🌏 **Chinese search** — works best with the [silversearch-chinese-tokenizer](https://github.com/LelouchHe/silversearch-chinese-tokenizer)
 - 🪶 **Zero build** — pure Space Lua, no compilation needed
 - 🔤 **Pure-text snippets** — context excerpts are rendered as plain text via the official markdown parser, so `# headings`, `**bold**`, `[[links]]` in the source never leak into the preview
-- 🧩 **Dockable view** — registered as a real SilverBullet 2.12 view (`kiefeng.unlinkedMentions`), docked at the page bottom with a minimal frame; you can move it to a resizable bottom panel from the dock menu
+- 🧩 **Dockable view** — registered as a real SilverBullet 2.12 view (`kiefeng.unlinkedMentions`), docked at the page bottom; reopen it any time with `Navigate: Unlinked Mentions`, or move it to `page-top`, a sidebar, the bottom panel or a modal from the dock menu
 - 🎨 **Theme-independent** — no hardcoded colours; every style maps to an official SilverBullet token (`--editor-link-color`, `--subtle-color`, `--button-*`, …) with a `currentColor` fallback, so it follows the official light and dark themes and any custom theme that defines those tokens
 
 ## Requirements
@@ -65,7 +65,7 @@ config.set("unlinkedMentions", {
   enabled = true,          -- Set to false to disable the widget entirely
   maxResults = 30,         -- Maximum results to display (increase for more, e.g. 50)
   minTermLength = 2,       -- Minimum search term length (single characters are ignored to avoid noise)
-  defaultOpen = true,      -- Widget expanded by default (set false to start collapsed)
+  defaultOpen = true,      -- View starts expanded; after that SilverBullet remembers your fold state
   contextLen = 100,        -- Context characters shown around each mention in the snippet
   matchFilename = true,    -- Also search for the bare file name when it is unique in the space (SilverBullet 2.11+)
   excludeFolders = {       -- Folders to EXCLUDE — you can add any of your own folders here
@@ -87,7 +87,7 @@ You can also change individual values without rewriting the whole config:
 ```lua
 -- Show more results
 config.set("unlinkedMentions.maxResults", 50)
--- Start collapsed
+-- Start with the view collapsed (initial state only; the fold state is remembered after that)
 config.set("unlinkedMentions.defaultOpen", false)
 -- Disable the widget
 config.set("unlinkedMentions.enabled", false)

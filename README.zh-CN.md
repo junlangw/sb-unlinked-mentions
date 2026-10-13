@@ -14,12 +14,12 @@
 - 🛡️ **安全替换**：自动跳过 frontmatter、代码块、HTML 注释、行内代码、已有 `[[双链]]`、Markdown 链接 URL
 - 🏷️ **别名支持**：读取 frontmatter 的 `aliases`，命中别名时转成 `[[真实页面名|别名原文]]` 保留原文字
 - 📄 **文件名匹配**：`People/Alice` 也能搜到纯文本 “Alice”，前提是没有其他文件同名（需 SilverBullet 2.11+）
-- 📂 **可折叠**：点击标题展开/收起（隐藏箭头，与 Linked Mentions 视觉一致）
+- 🗂️ **原生面板外壳**：用 SilverBullet 官方视图框架渲染，外观与内置 Linked Mentions 一致（标题栏、折叠、关闭，以及可四处停靠的 dock 菜单）
 - 🌏 **中文搜索**：配合 [中文分词器](https://github.com/LelouchHe/silversearch-chinese-tokenizer) 效果最佳
 - 🪶 **零构建**：纯 Space Lua，一个 `.md` 文件即可，无需编译
 - 🔤 **纯文本摘要**：上下文片段经官方 markdown 解析器转纯文本，原文中的 `# 标题`、`**加粗**`、`[[链接]]` 不会泄漏到预览里
-- 🧩 **可停靠视图**：以 SilverBullet 2.12 的原生视图 `kiefeng.unlinkedMentions` 注册，停靠在页面底部（minimal 框），可从 dock 菜单移到可调大小的底部面板
-- 🎨 **不依赖主题**：不写死任何色值，全部映射到 SilverBullet 官方 token（`--editor-link-color`、`--subtle-color`、`--button-*` 等），并以 `currentColor 兜底。官方亮色/暗色主题自动跟随，自定义主题只要定义了同名 token 也能接住
+- 🧩 **可停靠视图**：以 SilverBullet 2.12 的原生视图 `kiefeng.unlinkedMentions` 注册，停靠在页面底部；关掉后可用 `Navigate: Unlinked Mentions` 呼回，也能从 dock 菜单移到页首、侧栏、底部面板或模态
+- 🎨 **不依赖主题**：不写死任何色值，全部映射到 SilverBullet 官方 token（`--editor-link-color`、`--subtle-color`、`--button-*` 等），并以 `currentColor` 兜底。官方亮色/暗色主题自动跟随，自定义主题只要定义了同名 token 也能接住
 
 ## 环境要求
 
@@ -53,7 +53,7 @@ config.set("unlinkedMentions", {
   enabled = true,          -- 设为 false 完全禁用
   maxResults = 30,         -- 最多显示条数（想看更多可改成 50 等）
   minTermLength = 2,       -- 最短搜索词长度（单字不搜，避免噪声）
-  defaultOpen = true,      -- 默认展开（false 则默认折叠）
+  defaultOpen = true,      -- 视图初始展开；之后折叠状态由 SilverBullet 记住
   contextLen = 100,        -- 每条提及前后显示的上下文字符数
   matchFilename = true,    -- 文件名全库唯一时也作为搜索词（需 SilverBullet 2.11+）
   excludeFolders = {       -- 排除的目录 —— 可以把自己的目录加进来
@@ -75,7 +75,7 @@ config.set("unlinkedMentions", {
 ```lua
 -- 显示更多结果
 config.set("unlinkedMentions.maxResults", 50)
--- 默认折叠
+-- 初始折叠（只影响首次打开；之后折叠状态会被记住）
 config.set("unlinkedMentions.defaultOpen", false)
 -- 禁用插件
 config.set("unlinkedMentions.enabled", false)
@@ -89,7 +89,7 @@ config.set("unlinkedMentions.matchFilename", false)
 2. 用 Silversearch 逐个搜索
 3. 过滤掉：当前页自身、已有双链的页面、被排除的目录
 4. 对每个结果做**精确子串验证**（检查摘要或全文是否真的包含搜索词），消除模糊匹配误报
-5. 按相关度排序，在 Linked Mentions 下方渲染可折叠区块
+5. 按相关度排序，在页面底部渲染列表（标题栏与折叠由官方视图框架提供）
 
 ## 转换安全性
 

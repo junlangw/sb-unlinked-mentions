@@ -15,34 +15,16 @@ share.mode: pull
    第三方主题只要定义了对应 token 也会被接住。
    改配色请改这里，不要改Lua。 */
 
-/* 折叠容器 */
+/* 内容容器：标题栏、折叠、关闭、停靠菜单都由视图框架提供（与官方 Linked Mentions 同一套外观），
+   这里只管列表本体的排布 */
 .sb-unlinked {
-  margin-top: 0.5rem;
+  margin-top: 0;
 }
-/* 折叠标题：隐藏箭头，标题按 H1 原样渲染（与 Linked Mentions 一致） */
-.sb-unlinked-summary {
-  cursor: pointer;
-  user-select: none;
-  list-style: none;
-  display: block;
-  padding: 0;
-}
-.sb-unlinked-summary::-webkit-details-marker {
-  display: none;
-}
-/* H1 清零默认 margin，收紧 line-height，让标题背景与框体上缘对齐 */
-.sb-unlinked-summary h1 {
-  margin: 0 !important;
-  padding: 0 !important;
-  line-height: 1.2 !important;
-}
-.sb-unlinked-summary:hover {
-  opacity: 0.85;
-}
+/* 计数行：列表上方的一行浅色说明（官方视图的标题栏不显示数量） */
 .sb-unlinked-count {
-  font-weight: normal;
-  font-size: 0.5em;
-  opacity: 0.55;
+  font-size: 0.85em;
+  color: var(--meta-subtle-color, currentColor);
+  padding: 0 0 2px 0;
 }
 .sb-unlinked-content {
   padding: 2px 0 6px 0;
@@ -465,7 +447,6 @@ function widgets.unlinkedMentions(pageName)
   local maxResults = options.maxResults or 30
   local visible = math.min(#results, maxResults)
   local hiddenCount = #results - visible
-  local defaultOpen = options.defaultOpen ~= false
 
   local visibleResults = {}
   local itemNodes = {}
@@ -534,12 +515,11 @@ function widgets.unlinkedMentions(pageName)
   })
 
   return widget.new {
-    html = dom.details {
+    html = dom.div {
       class = "sb-unlinked",
-      open = defaultOpen,
-      dom.summary {
-        class = "sb-unlinked-summary",
-        "# Unlinked Mentions (" .. tostring(#results) .. ")",
+      dom.div {
+        class = "sb-unlinked-count",
+        tostring(#results) .. " unlinked mention" .. (#results == 1 and "" or "s"),
       },
       dom.div {
         class = "sb-unlinked-content",
@@ -673,14 +653,18 @@ pcall(function()
 end)
 
 -- 注册为页面底部的可停靠视图（2.12+ API，取代已废弃的 hooks:renderBottomWidgets）。
--- frame = "minimal" 隐藏标题栏/折叠/关闭按钮，与插件自己的标题融为一体；
+-- 与官方 Linked Mentions 同一套外观：用默认 frame（标题栏 + 折叠 + 关闭 + 停靠菜单），
+-- 标题栏由视图框架渲染，所以插件不再自己画标题；可停靠位置也照官方开放。
 -- 内容为空时（该页无未链接提及）视图自动隐藏。
 view.define {
   name = "kiefeng.unlinkedMentions",
   title = "Unlinked Mentions",
+  command = "Navigate: Unlinked Mentions",
+  menu = { location = "view", group = "1_views", order = 4, label = "Unlinked Mentions" },
   dock = "page-bottom",
-  supportedDocks = { "page-bottom", "bhs" },
-  frame = "minimal",
+  supportedDocks = { "page-top", "page-bottom", "lhs", "rhs", "bhs", "modal" },
+  defaultOpen = config.get("unlinkedMentions.defaultOpen") ~= false,
+  refreshOnOpen = true,
   widget = widget.new {
     refreshOn = { "navigate", "edit", "index" },
     content = function()

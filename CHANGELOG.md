@@ -6,10 +6,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and
 
 ## [Unreleased]
 
-### 2026-10-12
-- `matchFilename` option (default `true`): a page inside a folder is also found by its bare file name — `People/Alice` matches a plain "Alice" — as long as no other file in the space shares that name.
-- Mirrors SilverBullet 2.11's name-based link resolution, which resolves `[[Alice]]` to `People/Alice` under the same condition.
-- No effect on older SilverBullet versions.
+- Nothing yet.
+
+## [0.8.0] - 2026-10-13
+
+### Added
+- `matchFilename` option (default `true`, SilverBullet 2.11+): a page inside a folder is now also found by its bare file name — `People/Alice` matches a plain "Alice" — as long as no other file in the space shares that name. Mirrors SilverBullet 2.11's name-based link resolution, which resolves `[[Alice]]` to `People/Alice` under the same condition. No effect on older SilverBullet versions. (Thanks @junlangw — PR #1.)
+
+### Changed
+- **The view now uses SilverBullet's default frame, matching the built-in Linked Mentions.** It gets the standard panel header — title, fold, close — plus a dock menu, and can be docked to `page-top`, `page-bottom`, `lhs`, `rhs`, `bhs` or `modal`. Reopen it any time with the new `Navigate: Unlinked Mentions` command.
+  - 0.7.0 used `frame = "minimal"` to reproduce the pre-2.12 bottom-widget look. That look was only ever identical to Linked Mentions because SilverBullet 2.10 rendered both through `hooks:renderBottomWidgets`; 2.11 moved Linked Mentions to a framed view, so the minimal frame stopped matching it.
+- The heading is no longer drawn by the plug — the frame renders it — and the result count is now a subtle line above the list.
+- `defaultOpen` now sets the view's initial open state (it used to control the `<details>` element); the fold state is remembered natively afterwards.
+
+### Removed
+- The `<details>`/`<summary>` wrapper: folding is native to the view frame now.
 
 ## [0.7.1] - 2026-10-13
 
